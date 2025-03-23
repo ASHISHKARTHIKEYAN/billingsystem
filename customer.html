@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Management</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script>
+        let customers = [];
+
+        function showSection(sectionId) {
+            document.getElementById("customerList").style.display = "none";
+            document.getElementById("addEditCustomer").style.display = "none";
+            document.getElementById("customerDetails").style.display = "none";
+            document.getElementById(sectionId).style.display = "block";
+
+            if (sectionId === "customerList") displayCustomers();
+        }
+
+        function saveCustomer(event) {
+            event.preventDefault();
+            let name = document.getElementById("customerName").value.trim();
+            let email = document.getElementById("customerEmail").value.trim();
+            let phone = document.getElementById("customerPhone").value.trim();
+
+            if (name && email && phone) {
+                customers.push({ name, email, phone, invoices: [] });
+                alert("Customer added successfully!");
+                document.getElementById("customerForm").reset();
+                showSection("customerList");
+            } else {
+                alert("Please fill in all fields!");
+            }
+        }
+
+        function displayCustomers() {
+            let tableBody = document.getElementById("customerTableBody");
+            tableBody.innerHTML = "";
+
+            customers.forEach((customer, index) => {
+                let row = `<tr>
+                    <td>${customer.name}</td>
+                    <td>${customer.email}</td>
+                    <td>${customer.phone}</td>
+                    <td>
+                        <button class="btn btn-info btn-sm" onclick="viewCustomer(${index})">View</button>
+                        <button class="btn btn-warning btn-sm" onclick="editCustomer(${index})">Edit</button>
+                    </td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        function viewCustomer(index) {
+            let customer = customers[index];
+            document.getElementById("detailName").innerText = customer.name;
+            document.getElementById("detailEmail").innerText = customer.email;
+            document.getElementById("detailPhone").innerText = customer.phone;
+
+            let invoiceTable = document.getElementById("invoiceTableBody");
+            invoiceTable.innerHTML = customer.invoices.length
+                ? customer.invoices.map((inv, i) => `<tr><td>${i + 1}</td><td>₹${inv.amount}</td><td>${inv.status}</td></tr>`).join("")
+                : "<tr><td colspan='3'>No invoices yet.</td></tr>";
+
+            // Set invoice dashboard link with customer name as query parameter
+            document.getElementById("invoiceDashboardLink").href = `invoice.html?customer=${encodeURIComponent(customer.name)}`;
+OBOBOBOBOBOBOB
+OBOB            showSection("customerDetails");
+OB        }
+OBOB
+OB        function editCustomer(index) {
+            let customer = customers[index];
+OBOBOBOB            document.getElementById("customerName").value = customer.name;
+            document.getElementById("customerEmail").value = customer.email;
+            document.getElementById("customerPhone").value = customer.phone;
+
+            customers.splice(index, 1);
+OB            showSection("addEditCustomer");
+        }
+
+OB        function searchCustomer() {
+OB            let searchQuery = document.getElementById("searchCustomer").value.toLowerCase();
+            let tableBody = document.getElementById("customerTableBody");
+            tableBody.innerHTML = "";
+
+            customers
+                .filter(customer => customer.name.toLowerCase().includes(searchQuery))
+                .forEach((customer, index) => {
+                    let row = `<tr>
+                        <td>${customer.name}</td>
+                        <td>${customer.email}</td>
+                        <td>${customer.phone}</td>
+                        <td>
+                            <button class="btn btn-info btn-sm" onclick="viewCustomer(${index})">View</button>
+                            <button class="btn btn-warning btn-sm" onclick="editCustomer(${index})">Edit</button>
+                        </td>
+                    </tr>`;
+                    tableBody.innerHTML += row;
+                });
+        }
+
+        document.addEventListener("DOMContentLoaded", () => showSection("customerList"));
+    </script>
+</head>
+<body class="container mt-4">
+    <h2 class="text-center">Customer Management</h2>
+
+    <div class="mt-3">
+        <a href="dashboard.html" class="btn btn-primary">Go to Dashboard</a>
+    </div>
+
+    <ul class="nav nav-tabs">
+        <li class="nav-item"><a class="nav-link active" href="#" onclick="showSection('customerList')">Customer List</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('addEditCustomer')">Add/Edit Customer</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('customerDetails')">Customer Details</a></li>
+    </ul>
+
+    <div id="customerList" class="mt-4">
+        <h4>Customer List</h4>
+        <input type="text" id="searchCustomer" class="form-control w-50 mb-2" placeholder="Search Customer..." oninput="searchCustomer()">
+        <table class="table table-bordered">
+            <thead>
+                <tr><th>Name</th><th>Email</th><th>Phone</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="customerTableBody"></tbody>
+        </table>
+    </div>
+
+    <div id="addEditCustomer" class="mt-4" style="display: none;">
+        <h4>Add/Edit Customer</h4>
+        <form id="customerForm" onsubmit="saveCustomer(event)">
+            <div class="mb-3">
+                <label class="form-label">Full Name</label>
+                <input type="text" id="customerName" class="form-control" placeholder="Enter full name" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" id="customerEmail" class="form-control" placeholder="Enter email" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Phone</label>
+                <input type="text" id="customerPhone" class="form-control" placeholder="Enter phone number" required>
+            </div>
+            <button type="submit" class="btn btn-success">Save Customer</button>
+        </form>
+    </div>
+
+    <div id="customerDetails" class="mt-4" style="display: none;">
+        <h4>Customer Details</h4>
+        <p><strong>Name:</strong> <span id="detailName"></span></p>
+        <p><strong>Email:</strong> <span id="detailEmail"></span></p>
+        <p><strong>Phone:</strong> <span id="detailPhone"></span></p>
+
+        <h5>Invoice History</h5>
+        <table class="table table-bordered">
+            <thead>
+                <tr><th>#</th><th>Amount (₹)</th><th>Status</th></tr>
+            </thead>
+            <tbody id="invoiceTableBody"></tbody>
+        </table>
+
+        <!-- New Button to Navigate to Invoice Dashboard -->
+        <a id="invoiceDashboardLink" href="invoice.html" class="btn btn-primary">Go to Invoice Dashboard</a>
+    </div>
+</body>
+</html>
+    
