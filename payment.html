@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Management</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script>
+        let payments = []; // No pre-built payments
+
+        function showSection(sectionId) {
+            document.getElementById("paymentsList").style.display = "none";
+            document.getElementById("addPayment").style.display = "none";
+            document.getElementById(sectionId).style.display = "block";
+
+            if (sectionId === "paymentsList") displayPayments();
+        }
+
+        function savePayment(event) {
+            event.preventDefault();
+            let customer = document.getElementById("customerName").value.trim();
+            let invoiceId = document.getElementById("invoiceId").value.trim();
+            let amount = document.getElementById("amount").value.trim();
+            let method = document.getElementById("paymentMethod").value;
+            let date = new Date().toLocaleDateString();
+
+            if (customer && invoiceId && amount && method) {
+                payments.push({ customer, invoiceId, amount, method, date });
+                alert("Payment added successfully!");
+                document.getElementById("paymentForm").reset();
+                showSection("paymentsList");
+            } else {
+                alert("Please fill in all fields!");
+            }
+        }
+
+        function displayPayments() {
+            let tableBody = document.getElementById("paymentsTableBody");
+            tableBody.innerHTML = "";
+
+            payments.forEach((payment, index) => {
+                let row = `<tr>
+                    <td>${payment.customer}</td>
+                    <td>${payment.invoiceId}</td>
+                    <td>₹${payment.amount}</td>
+                    <td>${payment.method}</td>
+                    <td>${payment.date}</td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        function searchPayments() {
+            let query = document.getElementById("searchPayment").value.toLowerCase();
+            let tableBody = document.getElementById("paymentsTableBody");
+            tableBody.innerHTML = "";
+
+            payments
+                .filter(payment => 
+                    payment.customer.toLowerCase().includes(query) || 
+                    payment.invoiceId.toLowerCase().includes(query))
+                .forEach((payment, index) => {
+                    let row = `<tr>
+                        <td>${payment.customer}</td>
+                        <td>${payment.invoiceId}</td>
+                        <td>₹${payment.amount}</td>
+                        <td>${payment.method}</td>
+                        <td>${payment.date}</td>
+                    </tr>`;
+                    tableBody.innerHTML += row;
+                });
+        }
+
+        document.addEventListener("DOMContentLoaded", () => showSection("paymentsList"));
+    </script>
+</head>
+<body class="container mt-4">
+    <h2 class="text-center">Payment Management</h2>
+
+    <!-- Navigation Tabs -->
+    <ul class="nav nav-tabs">
+        <li class="nav-item"><a class="nav-link active" href="#" onclick="showSection('paymentsList')">Payments List</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('addPayment')">Add Payment</a></li>
+    </ul>
+OAOA
+OA    <!-- Payments List Section -->
+    <div id="paymentsList" class="mt-4">
+OAOA        <h4>Payments List</h4>
+OA        <input type="text" id="searchPayment" class="form-control w-50 mb-2" placeholder="Search by Customer or Invoice ID..." oninput="searchPayments()">
+        <table class="table table-bordered">
+OAOAOAOAOAOAOAOAOAOAOA            <thead>
+OAOAOA                <tr><th>Customer</th><th>Invoice ID</th><th>Amount (₹)</th><th>Method</th><th>Date</th></tr>
+OBOB            </thead>
+            <tbody id="paymentsTableBody"></tbody>
+OAOAOAOA        </table>
+OAOAOAOAOAOAOAOAOA    </div>
+OAOAOAOAOAOAOAOAOAOAOAOAOA
+    <!-- Add Payment Section -->
+OAOAOA    <div id="addPayment" class="mt-4" style="display: none;">
+        <h4>Add Payment</h4>
+OAOAOAOAOAOAOAOAOAOAOAOAOAOAOAOA        <form id="paymentForm" onsubmit="savePayment(event)">
+            <div class="mb-3">
+OAOA                <label class="form-label">Customer Name</label>
+                <input type="text" id="customerName" class="form-control" placeholder="Enter Customer Name" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Invoice ID</label>
+OAOAOAOAOAOAOAOAOAOAOAOA                <input type="text" id="invoiceId" class="form-control" placeholder="Enter Invoice ID" required>
+            </div>
+OAOAOAOA            <div class="mb-3">
+                <label class="form-label">Amount (₹)</label>
+                <input type="number" id="amount" class="form-control" placeholder="Enter Amount" required>
+            </div>
+OAOA            <div class="mb-3">
+                <label class="form-label">Payment Method</label>
+OAOAOAOAOAOAOAOAOAOA                <select id="paymentMethod" class="form-control" required>
+OAOAOAOAOA                    <option value="Cash">Cash</option>
+                    <option value="Credit Card">Credit Card</option>
+OAOA                    <option value="Bank Transfer">Bank Transfer</option>
+OAOAOA                    <option value="UPI">UPI</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-success">Save Payment</button>
+        </form>
+    </div>
+</body>
+</html>
+
