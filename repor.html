@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports Section</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script>
+        let salesData = [];
+        let customers = [];
+        let invoices = [];
+
+        function showSection(sectionId) {
+            document.getElementById("salesReport").style.display = "none";
+            document.getElementById("customerReport").style.display = "none";
+            document.getElementById("invoiceReport").style.display = "none";
+            document.getElementById(sectionId).style.display = "block";
+
+            if (sectionId === "salesReport") displaySalesReport();
+            if (sectionId === "customerReport") displayCustomerReport();
+            if (sectionId === "invoiceReport") displayInvoiceReport();
+        }
+
+        function addSale() {
+            let amount = document.getElementById("saleAmount").value.trim();
+            let date = document.getElementById("saleDate").value;
+            if (amount && date) {
+                salesData.push({ amount: parseFloat(amount), date });
+                alert("Sale added successfully!");
+                document.getElementById("saleForm").reset();
+                displaySalesReport();
+            } else {
+                alert("Please enter valid data!");
+            }
+        }
+
+        function displaySalesReport() {
+            let tableBody = document.getElementById("salesTableBody");
+            tableBody.innerHTML = salesData.map((sale, i) =>
+                `<tr><td>${i + 1}</td><td>${sale.date}</td><td>₹${sale.amount}</td></tr>`
+            ).join("") || "<tr><td colspan='3'>No sales data available.</td></tr>";
+        }
+
+        function addCustomer() {
+            let name = document.getElementById("customerName").value.trim();
+            if (name) {
+                customers.push({ name, totalInvoices: 0 });
+                alert("Customer added successfully!");
+                document.getElementById("customerForm").reset();
+                displayCustomerReport();
+            } else {
+                alert("Please enter customer name!");
+            }
+        }
+
+        function displayCustomerReport() {
+            let tableBody = document.getElementById("customerTableBody");
+            tableBody.innerHTML = customers.map((cust, i) =>
+                `<tr><td>${i + 1}</td><td>${cust.name}</td><td>${cust.totalInvoices}</td></tr>`
+            ).join("") || "<tr><td colspan='3'>No customer data available.</td></tr>";
+        }
+
+        function addInvoice() {
+            let amount = document.getElementById("invoiceAmount").value.trim();
+            let status = document.getElementById("invoiceStatus").value;
+            if (amount) {
+                invoices.push({ amount: parseFloat(amount), status });
+                alert("Invoice added successfully!");
+                document.getElementById("invoiceForm").reset();
+                displayInvoiceReport();
+            } else {
+                alert("Please enter invoice amount!");
+            }
+        }
+
+        function displayInvoiceReport() {
+            let tableBody = document.getElementById("invoiceTableBody");
+            tableBody.innerHTML = invoices.map((inv, i) =>
+                `<tr><td>${i + 1}</td><td>₹${inv.amount}</td><td><span class="badge bg-${getStatusColor(inv.status)}">${inv.status}</span></td></tr>`
+            ).join("") || "<tr><td colspan='3'>No invoice data available.</td></tr>";
+        }
+
+        function getStatusColor(status) {
+            return status === "Paid" ? "success" : status === "Pending" ? "warning" : "danger";
+        }
+
+        document.addEventListener("DOMContentLoaded", () => showSection("salesReport"));
+    </script>
+</head>
+<body class="container mt-4">
+    <h2 class="text-center">Reports Section</h2>
+
+    <!-- Navigation Tabs -->
+    <ul class="nav nav-tabs">
+        <li class="nav-item"><a class="nav-link active" href="#" onclick="showSection('salesReport')">Sales Report</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('customerReport')">Customer Report</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('invoiceReport')">Invoice Report</a></li>
+    </ul>
+
+    <!-- Sales Report Section -->
+    <div id="salesReport" class="mt-4">
+        <h4>Sales Report</h4>
+        <form id="saleForm" onsubmit="event.preventDefault(); addSale();">
+            <div class="mb-3">
+                <label class="form-label">Sale Amount (₹)</label>
+                <input type="number" id="saleAmount" class="form-control" placeholder="Enter Sale Amount" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Date</label>
+                <input type="date" id="saleDate" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-success">Add Sale</button>
+        </form>
+        <h5 class="mt-4">Sales Data</h5>
+        <table class="table table-bordered">
+            <thead>
+                <tr><th>#</th><th>Date</th><th>Amount (₹)</th></tr>
+            </thead>
+            <tbody id="salesTableBody"></tbody>
+        </table>
+    </div>
+
+    <!-- Customer Report Section -->
+    <div id="customerReport" class="mt-4" style="display: none;">
+        <h4>Customer Report</h4>
+        <form id="customerForm" onsubmit="event.preventDefault(); addCustomer();">
+            <div class="mb-3">
+                <label class="form-label">Customer Name</label>
+                <input type="text" id="customerName" class="form-control" placeholder="Enter Customer Name" required>
+            </div>
+            <button type="submit" class="btn btn-success">Add Customer</button>
+        </form>
+        <h5 class="mt-4">Customer Data</h5>
+        <table class="table table-bordered">
+            <thead>
+                <tr><th>#</th><th>Name</th><th>Total Invoices</th></tr>
+            </thead>
+            <tbody id="customerTableBody"></tbody>
+        </table>
+    </div>
+
+    <!-- Invoice Report Section -->
+    <div id="invoiceReport" class="mt-4" style="display: none;">
+        <h4>Invoice Report</h4>
+        <form id="invoiceForm" onsubmit="event.preventDefault(); addInvoice();">
+            <div class="mb-3">
+                <label class="form-label">Invoice Amount (₹)</label>
+                <input type="number" id="invoiceAmount" class="form-control" placeholder="Enter Invoice Amount" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Status</label>
+                <select id="invoiceStatus" class="form-control" required>
+                    <option value="Paid">Paid</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Overdue">Overdue</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-success">Add Invoice</button>
+        </form>
+        <h5 class="mt-4">Invoices</h5>
+        <table class="table table-bordered">
+            <thead>
+                <tr><th>#</th><th>Amount (₹)</th><th>Status</th></tr>
+            </thead>
+            <tbody id="invoiceTableBody"></tbody>
+        </table>
+    </div>
+</body>
+</html>
+
