@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js for visualization -->
+</head>
+<body class="bg-light" onload="checkLogin(); loadDashboard();">
+
+    <script>
+        // Function to check if user is logged in
+        function checkLogin() {
+            if (localStorage.getItem("isLoggedIn") !== "true") {
+                alert("You must log in first!");
+                window.location.href = "loginpage.html"; // Redirect to login
+            }
+        }
+
+        // Function to logout
+        function logout() {
+            localStorage.removeItem("isLoggedIn"); // Clear login status
+            alert("Logged out successfully!");
+            window.location.href = "loginpage.html"; // Redirect to Login Page
+        }
+    </script>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">Billing System</a>
+            <div>
+                <a href="customer.html" class="btn btn-light">Customer Management</a>
+                <a href="invoice.html" class="btn btn-light">Invoice Management</a>
+                <a href="payment.html" class="btn btn-light">Payment Management</a>
+                <a href="product.html" class="btn btn-light">Product Management</a>
+                <a href="repor.html" class="btn btn-light">Reports</a>
+                <a href="userprofile.html" class="btn btn-light">User Profile</a>
+                <button class="btn btn-danger" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h2 class="text-center">Dashboard</h2>
+
+        <!-- User Input Section -->
+        <div class="row">
+            <div class="col-md-3">
+                <label>Total Sales (₹)</label>
+                <input type="number" id="salesInput" class="form-control" placeholder="Enter Sales">
+            </div>
+            <div class="col-md-3">
+                <label>Pending Invoices</label>
+                <input type="number" id="invoicesInput" class="form-control" placeholder="Enter Pending Invoices">
+            </div>
+            <div class="col-md-3">
+                <label>Recent Transactions</label>
+                <input type="number" id="transactionsInput" class="form-control" placeholder="Enter Transactions">
+            </div>
+            <div class="col-md-3">
+                <label>Customers</label>
+                <input type="number" id="customersInput" class="form-control" placeholder="Enter Customers">
+            </div>
+        </div>
+        
+        <div class="text-center mt-3">
+            <button class="btn btn-success" onclick="updateDashboard()">Update Dashboard</button>
+        </div>
+
+        <!-- Dashboard Stats -->
+        <div class="row text-center mt-4">
+            <div class="col-md-3">
+                <div class="card bg-success text-white p-3 shadow">
+                    <h5>Total Sales</h5>
+                    <h3 id="salesOutput">₹0</h3>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white p-3 shadow">
+                    <h5>Pending Invoices</h5>
+                    <h3 id="invoicesOutput">0</h3>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-info text-white p-3 shadow">
+                    <h5>Recent Transactions</h5>
+                    <h3 id="transactionsOutput">0</h3>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-danger text-white p-3 shadow">
+                    <h5>Customers</h5>
+                    <h3 id="customersOutput">0</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sales Chart -->
+        <div class="mt-4">
+            <h4>Sales Overview</h4>
+            <canvas id="salesChart"></canvas>
+        </div>
+    </div>
+
+    <!-- JavaScript for Dashboard -->
+    <script>
+        // Function to update dashboard values
+        function updateDashboard() {
+            const sales = document.getElementById('salesInput').value || 0;
+            const invoices = document.getElementById('invoicesInput').value || 0;
+            const transactions = document.getElementById('transactionsInput').value || 0;
+            const customers = document.getElementById('customersInput').value || 0;
+
+            // Update Dashboard
+            document.getElementById('salesOutput').innerText = `₹${sales}`;
+            document.getElementById('invoicesOutput').innerText = invoices;
+            document.getElementById('transactionsOutput').innerText = transactions;
+            document.getElementById('customersOutput').innerText = customers;
+
+            // Save to Local Storage
+            localStorage.setItem("sales", sales);
+            localStorage.setItem("invoices", invoices);
+            localStorage.setItem("transactions", transactions);
+            localStorage.setItem("customers", customers);
+        }
+
+        // Function to load stored values on page load
+        function loadDashboard() {
+            document.getElementById('salesOutput').innerText = `₹${localStorage.getItem("sales") || 0}`;
+            document.getElementById('invoicesOutput').innerText = localStorage.getItem("invoices") || 0;
+            document.getElementById('transactionsOutput').innerText = localStorage.getItem("transactions") || 0;
+            document.getElementById('customersOutput').innerText = localStorage.getItem("customers") || 0;
+        }
+    </script>
+
+</body>
+</html>
+
